@@ -1,94 +1,151 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(
+  MaterialApp(
+    home: MyApp(),
+  )
+);
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyHomePage(title: '购物车'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  double _price = 12.5;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  double _computerPriceAll() => (_counter * _price);
 
   @override
   Widget build(BuildContext context) {
-    Widget _goodsItem = Container(
-      padding: EdgeInsets.all(20.0),
-      height: 150.0,
-      child: Row(children: <Widget>[
-        Container(
-          width: 100.0,
-          height: 100.0,
-          decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(image: AssetImage('assets/avatar1.jpeg'))),
-        ),
-        Spacer(),
-        Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-          Text('美味的冰淇淋'),
-          Row(children: <Widget>[
-            Text('价格：$_price'),
-          ]),
-          Row(children: <Widget>[
-            Text('数量：'),
-            Text('$_counter'),
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: _incrementCounter,
-            )
-          ])
-        ])
-      ]),
-    );
-
-    Widget _computerPrice = Container(
-        child: Flex(direction: Axis.horizontal, children: <Widget>[
-      Expanded(child: Container(), flex: 1),
-      Row(children: <Widget>[Text('总价：${_computerPriceAll()}')])
-    ]));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text('表单组件')
+            ],
+          )
       ),
-      body: Column(
-        children: <Widget>[_goodsItem, _computerPrice],
+      body: LoginPage()
+    );
+  }
+}
+
+class LoginPage extends StatefulWidget {
+
+  @override
+  _LoginPage createState() => _LoginPage();
+}
+
+
+
+class _LoginPage extends State<LoginPage> {
+
+  final Map<String, String> _data = {
+    "username": "",
+    "password": ""
+  };
+
+  void _handleLogin() {
+    if (_data["username"] == "") {
+      _alertDialog('请输入用户名');
+      return;
+    }
+
+    if (_data["password"] == "") {
+      _alertDialog('请输入密码');
+      return;
+    }
+
+  }
+
+  void _alertDialog(String tipText) async {
+    var result = await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('提示信息'),
+          content: Text(tipText),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("确定"),
+              onPressed: () {
+                print("确定");
+                Navigator.of(context).pop("Ok");
+              },
+            )
+          ],
+        );
+      }
+    );
+
+    print(result);
+  }
+
+  Widget _pageTitle() {
+    return Container(
+      width: 375,
+      height: 150,
+      color: Colors.redAccent,
+      child: Center(
+        child: Text('账号密码登录',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18
+          ),
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+    );
+  }
+
+  Widget _formField() {
+    return Container(
+      padding: EdgeInsets.all(20),
+      child: Column(
+        children: <Widget>[
+          TextField(
+            decoration: InputDecoration(
+                labelText: "用户名：",
+                hintText: '请输入用户名'
+            ),
+            onChanged: (value) {
+              setState(() {
+                _data['username'] = value;
+              });
+            }
+          ),
+          TextField(
+            obscureText: true,
+            keyboardType: TextInputType.visiblePassword,
+            decoration: InputDecoration(
+                labelText: "密码：",
+                hintText: '请输入密码'
+            ),
+            onChanged: (value) {
+              setState(() {
+                _data['password'] = value;
+              });
+            },
+            onSubmitted: (value) => _handleLogin(),
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 30),
+            width: 281,
+            height: 40,
+            child: RaisedButton(
+              child: Text('登录'),
+              textColor: Colors.white,
+              color: Colors.lightBlueAccent,
+              onPressed: _handleLogin,
+            ),
+          )
+        ],
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Column(
+      children: <Widget>[
+        _pageTitle(),
+        _formField()
+      ],
     );
   }
 }
